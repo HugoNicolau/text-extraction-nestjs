@@ -40,7 +40,7 @@ Before running the project, ensure you have the following installed:
 
    ```bash
    git clone https://github.com/HugoNicolau/text-extraction-nestjs.git
-   cd text-extraction-backend
+   cd text-extraction-nestjs
    ```
 
 2. **Install dependencies:**
