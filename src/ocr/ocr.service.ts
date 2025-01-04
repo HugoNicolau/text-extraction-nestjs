@@ -22,7 +22,7 @@ export class OcrService {
 
       console.log('Calling FastAPI...');
       const response = await firstValueFrom(
-        this.httpService.post('http://localhost:8000/extract-text/', formData, {
+        this.httpService.post(process.env.FASTAPI_URL, formData, {
           headers: {
             ...formData.getHeaders(),
           },
