@@ -28,7 +28,6 @@ export class OcrService {
           },
         }),
       );
-      console.log(response.data.text);
       return response.data.text;
     } catch (error) {
       throw new Error(`Error calling FastAPI: ${error.message}`);
