@@ -18,7 +18,7 @@ export class OcrService {
   async extractText(
     imageBuffer: Buffer,
     targetLanguage?: string,
-    improve?: string,
+    improveExtraction?: string,
   ): Promise<string> {
     try {
       const formData = new FormData();
@@ -41,7 +41,7 @@ export class OcrService {
       );
       let text = response.data.text;
 
-      if (improve) {
+      if (improveExtraction) {
         console.log('Improving text using OpenAI...');
         const improvementResponse = await this.openai.completions.create({
           model: 'gpt-3.5-turbo-instruct',
