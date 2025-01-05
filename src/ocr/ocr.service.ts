@@ -3,13 +3,25 @@ import { Injectable } from '@nestjs/common';
 import { firstValueFrom } from 'rxjs';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
+import { OpenAI } from 'openai';
 
 @Injectable()
 export class OcrService {
-  constructor(private httpService: HttpService) {}
+  private openai: OpenAI;
 
-  async extractText(imageBuffer: Buffer): Promise<string> {
+  constructor(private httpService: HttpService) {
+    this.openai = new OpenAI({
+      apiKey: process.env.OPENAI_API_KEY,
+    });
+  }
+
+  async extractText(
+    imageBuffer: Buffer,
+    targetLanguage?: string,
+  ): Promise<string> {
     try {
+      console.log('Received image buffer:', imageBuffer);
+      console.log('Target language:', targetLanguage);
       const formData = new FormData();
 
       const readableStream = new Readable();
@@ -28,7 +40,18 @@ export class OcrService {
           },
         }),
       );
-      return response.data.text;
+      let text = response.data.text;
+      if (targetLanguage) {
+        console.log(`Translating text to ${targetLanguage} using OpenAI...`);
+        const translationResponse = await this.openai.completions.create({
+          model: 'gpt-3.5-turbo-instruct',
+          prompt: `You are a helpful translator. Translate the following text to ${targetLanguage}: ${text}`,
+          max_tokens: 1000,
+        });
+        text = translationResponse.choices[0].text.trim();
+        console.log('Translated text:', text);
+      }
+      return text;
     } catch (error) {
       throw new Error(`Error calling FastAPI: ${error.message}`);
     }
