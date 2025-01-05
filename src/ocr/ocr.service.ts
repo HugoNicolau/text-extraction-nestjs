@@ -19,6 +19,7 @@ export class OcrService {
     imageBuffer: Buffer,
     targetLanguage?: string,
     improveExtraction?: string,
+    summarizeText?: string,
   ): Promise<string> {
     try {
       const formData = new FormData();
@@ -61,6 +62,17 @@ export class OcrService {
         });
         text = translationResponse.choices[0].text.trim();
         console.log('Translated text:', text);
+      }
+
+      if (summarizeText) {
+        console.log('Summarizing text using OpenAI...');
+        const summarizationResponse = await this.openai.completions.create({
+          model: 'gpt-3.5-turbo-instruct',
+          prompt: `You are a helpful summarizer. Please summarize the following text: ${text}`,
+          max_tokens: 1000,
+        });
+        text = summarizationResponse.choices[0].text.trim();
+        console.log('Summarized text:', text);
       }
       return text;
     } catch (error) {

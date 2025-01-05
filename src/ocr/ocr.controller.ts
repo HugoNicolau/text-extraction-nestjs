@@ -20,12 +20,14 @@ export class OcrController {
     @UploadedFile() file: Express.Multer.File,
     @Body('targetLanguage') targetLanguage: string,
     @Body('improveExtraction') improveExtraction: string,
+    @Body('summarizeText') summarizeText: string,
   ) {
     const imageBuffer = file.buffer;
     return this.ocrService.extractText(
       imageBuffer,
       targetLanguage,
       improveExtraction,
+      summarizeText,
     );
   }
 }
