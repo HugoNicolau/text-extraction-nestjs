@@ -19,8 +19,9 @@ export class OcrController {
   async extractText(
     @UploadedFile() file: Express.Multer.File,
     @Body('targetLanguage') targetLanguage: string,
+    @Body('improve') improve: string,
   ) {
     const imageBuffer = file.buffer;
-    return this.ocrService.extractText(imageBuffer, targetLanguage);
+    return this.ocrService.extractText(imageBuffer, targetLanguage, improve);
   }
 }

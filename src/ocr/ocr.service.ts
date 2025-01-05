@@ -18,10 +18,9 @@ export class OcrService {
   async extractText(
     imageBuffer: Buffer,
     targetLanguage?: string,
+    improve?: string,
   ): Promise<string> {
     try {
-      console.log('Received image buffer:', imageBuffer);
-      console.log('Target language:', targetLanguage);
       const formData = new FormData();
 
       const readableStream = new Readable();
@@ -41,6 +40,18 @@ export class OcrService {
         }),
       );
       let text = response.data.text;
+
+      if (improve) {
+        console.log('Improving text using OpenAI...');
+        const improvementResponse = await this.openai.completions.create({
+          model: 'gpt-3.5-turbo-instruct',
+          prompt: `You are a helpful editor. Please improve the following text and correct any possible OCR mistakes: ${text}`,
+          max_tokens: 1000,
+        });
+        text = improvementResponse.choices[0].text.trim();
+        console.log('Improved text:', text);
+      }
+
       if (targetLanguage) {
         console.log(`Translating text to ${targetLanguage} using OpenAI...`);
         const translationResponse = await this.openai.completions.create({
