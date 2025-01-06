@@ -4,6 +4,7 @@ import { firstValueFrom } from 'rxjs';
 import * as FormData from 'form-data';
 import { Readable } from 'stream';
 import { OpenAI } from 'openai';
+import { TextExtractionResult } from './types';
 
 @Injectable()
 export class OcrService {
@@ -20,8 +21,16 @@ export class OcrService {
     targetLanguage?: string,
     improveExtraction?: string,
     summarizeText?: string,
-  ): Promise<string> {
+  ): Promise<TextExtractionResult> {
     try {
+      const texts: TextExtractionResult = {
+        originalExtraction: '',
+        improvedExtraction: '',
+        translatedText: '',
+        summarizedText: '',
+        finalText: '',
+      };
+
       const formData = new FormData();
 
       const readableStream = new Readable();
@@ -41,6 +50,7 @@ export class OcrService {
         }),
       );
       let text = response.data.text;
+      texts.originalExtraction = text;
 
       if (improveExtraction) {
         console.log('Improving text using OpenAI...');
@@ -50,6 +60,7 @@ export class OcrService {
           max_tokens: 1000,
         });
         text = improvementResponse.choices[0].text.trim();
+        texts.improvedExtraction = text;
         console.log('Improved text:', text);
       }
 
@@ -61,6 +72,7 @@ export class OcrService {
           max_tokens: 1000,
         });
         text = translationResponse.choices[0].text.trim();
+        texts.translatedText = text;
         console.log('Translated text:', text);
       }
 
@@ -72,9 +84,11 @@ export class OcrService {
           max_tokens: 1000,
         });
         text = summarizationResponse.choices[0].text.trim();
+        texts.summarizedText = text;
         console.log('Summarized text:', text);
       }
-      return text;
+      texts.finalText = text;
+      return texts;
     } catch (error) {
       throw new Error(`Error calling FastAPI: ${error.message}`);
     }
