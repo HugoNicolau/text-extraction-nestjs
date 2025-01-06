@@ -56,7 +56,7 @@ export class OcrService {
         console.log('Improving text using OpenAI...');
         const improvementResponse = await this.openai.completions.create({
           model: 'gpt-3.5-turbo-instruct',
-          prompt: `You are a helpful editor. Please improve the following text and correct any possible OCR mistakes: ${text}`,
+          prompt: `Act as a meticulous editor. Enhance the clarity and correctness of the following text, correcting any OCR errors: ${text}`,
           max_tokens: 1000,
         });
         text = improvementResponse.choices[0].text.trim();
@@ -68,7 +68,7 @@ export class OcrService {
         console.log(`Translating text to ${targetLanguage} using OpenAI...`);
         const translationResponse = await this.openai.completions.create({
           model: 'gpt-3.5-turbo-instruct',
-          prompt: `You are a helpful translator. Translate the following text to ${targetLanguage}: ${text}`,
+          prompt: `Act as a skilled translator. Convert the following text into ${targetLanguage}, maintaining the original tone: ${text}`,
           max_tokens: 1000,
         });
         text = translationResponse.choices[0].text.trim();
@@ -80,7 +80,7 @@ export class OcrService {
         console.log('Summarizing text using OpenAI...');
         const summarizationResponse = await this.openai.completions.create({
           model: 'gpt-3.5-turbo-instruct',
-          prompt: `You are a helpful summarizer. Please summarize the following text: ${text}`,
+          prompt: `Act as a concise summarizer. Provide a brief summary of the following text in ${targetLanguage ?? 'its original language'}: ${text}`,
           max_tokens: 1000,
         });
         text = summarizationResponse.choices[0].text.trim();
