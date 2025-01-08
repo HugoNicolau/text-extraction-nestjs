@@ -21,6 +21,9 @@ import { JwtStrategy } from './jwt/jwt.strategy';
       username: process.env.DB_USERNAME || 'postgres',
       password: process.env.DB_PASSWORD || 'your_password',
       database: process.env.DB_NAME || 'ocr_db',
+      ssl: {
+        rejectUnauthorized: false,
+      },
       entities: [User, UserExtraction],
       synchronize: true,
     }),
