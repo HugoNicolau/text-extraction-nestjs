@@ -5,12 +5,17 @@ import * as FormData from 'form-data';
 import { Readable } from 'stream';
 import { OpenAI } from 'openai';
 import { TextExtractionResult } from './types';
+import { InjectRepository } from '@nestjs/typeorm';
+import { UserExtraction } from './ocr.entity';
 
 @Injectable()
 export class OcrService {
   private openai: OpenAI;
 
-  constructor(private httpService: HttpService) {
+  constructor(
+    private httpService: HttpService,
+    @InjectRepository(UserExtraction) private userExtractionRepository: any,
+  ) {
     this.openai = new OpenAI({
       apiKey: process.env.OPENAI_API_KEY,
     });
@@ -18,19 +23,20 @@ export class OcrService {
 
   async extractText(
     imageBuffer: Buffer,
+    title: string,
     targetLanguage?: string,
     improveExtraction?: string,
     summarizeText?: string,
+    userId?: string,
   ): Promise<TextExtractionResult> {
     try {
       const texts: TextExtractionResult = {
+        title,
         originalExtraction: '',
         improvedExtraction: '',
         translatedText: '',
         summarizedText: '',
-        finalText: '',
       };
-
       const formData = new FormData();
 
       const readableStream = new Readable();
@@ -87,7 +93,10 @@ export class OcrService {
         texts.summarizedText = text;
         console.log('Summarized text:', text);
       }
-      texts.finalText = text;
+
+      const textWithUserId = { ...texts, idUser: userId };
+      const ocrResult = this.userExtractionRepository.create(textWithUserId);
+      await this.userExtractionRepository.save(ocrResult);
       return texts;
     } catch (error) {
       throw new Error(`Error calling FastAPI: ${error.message}`);
