@@ -12,6 +12,7 @@ async function bootstrap() {
   app.enableCors({
     origin: [
       'http://localhost:3000',
+      'https://lang-a-image.vercel.app', //Testing
       process.env.CORS_FRONT_DEPLOYMENT,
       process.env.CORS_FRONT_DEPLOYMENT2,
     ], // Allow requests from this origin
