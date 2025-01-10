@@ -5,7 +5,7 @@ import {
   ManyToOne,
   JoinColumn,
 } from 'typeorm';
-import { User } from '../user/user.entity';
+import { User } from '../auth/user.entity';
 
 @Entity({ name: 'user_extractions' }) // Rename the table
 export class UserExtraction {

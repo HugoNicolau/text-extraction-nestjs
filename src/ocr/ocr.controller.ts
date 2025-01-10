@@ -1,32 +1,33 @@
 import {
   Controller,
   Post,
-  UseGuards,
   UseInterceptors,
   UploadedFile,
   Body,
-  Req,
+  Headers,
 } from '@nestjs/common';
 import { FileInterceptor } from '@nestjs/platform-express';
 import { OcrService } from './ocr.service';
 import { Express } from 'express';
-import { AuthGuard } from '@nestjs/passport';
 import { CreateUserExtractionDto } from './dto/create-user-extraction.dto';
+import { JwtService } from '@nestjs/jwt';
 
 @Controller('ocr')
 export class OcrController {
   constructor(private readonly ocrService: OcrService) {}
 
   @Post('extract')
-  @UseGuards(AuthGuard('jwt'))
   @UseInterceptors(FileInterceptor('file'))
   async extractText(
     @UploadedFile() file: Express.Multer.File,
     @Body() createUserExtractionDto: CreateUserExtractionDto,
-    @Req() req: any,
+    @Headers('Authorization') authorization: string,
   ) {
+    const jwtService = new JwtService({});
+    const token = authorization.split(' ')[1];
+    const decoded = jwtService.decode(token);
+    const userId = decoded['sub'];
     const imageBuffer = file.buffer;
-    const userId = req.user.id;
 
     return this.ocrService.extractText(
       imageBuffer,

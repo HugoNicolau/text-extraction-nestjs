@@ -55,6 +55,7 @@ export class OcrService {
           },
         }),
       );
+
       let text = response.data.text;
       texts.originalExtraction = text;
 

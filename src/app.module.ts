@@ -3,13 +3,10 @@ import { TypeOrmModule } from '@nestjs/typeorm';
 import { AppController } from './app.controller';
 import { AppService } from './app.service';
 import { OcrModule } from './ocr/ocr.module';
-import { UserExtraction } from './ocr/ocr.entity'; // Import your entity
-import { User } from './user/user.entity';
-import { PassportModule } from '@nestjs/passport';
+import { UserExtraction } from './ocr/ocr.entity';
+import { User } from './auth/user.entity';
 import { ConfigModule } from '@nestjs/config';
-import { UserModule } from './user/user.module';
-import { JwtAuthModule } from './jwt/jwt.module';
-import { JwtStrategy } from './jwt/jwt.strategy';
+import { AuthModule } from './auth/auth.module';
 
 @Module({
   imports: [
@@ -28,11 +25,9 @@ import { JwtStrategy } from './jwt/jwt.strategy';
       synchronize: true,
     }),
     OcrModule,
-    UserModule,
-    JwtAuthModule,
-    PassportModule.register({ defaultStrategy: 'google' }),
+    AuthModule,
   ],
   controllers: [AppController],
-  providers: [AppService, JwtStrategy],
+  providers: [AppService],
 })
 export class AppModule {}
